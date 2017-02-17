@@ -5,15 +5,21 @@ The project is part of the Udacity Self-driving Car Nanodegree program. The goal
 
 ## Outline
 The following steps will be taken in order to achieve the goal.
+
 1. **Camera calibration**—there is no such thing as a perfect lens. When taking a picture with a camera, we are projecting 3D objects onto a 2D platform and very often the image taken is subject to optical distortion due to the optical design of the lens. The camera is essentially what the self-driving car perceives the world through, and if the image itself is distorted, so will the perception be. And we certainly wouldn't want that. So in this step we will:
 	* Use a set of chessboard images to compute the *camera calibration matrix* and the *distortion coefficient*.
 	* We can then use the matrix and coefficients to correct the distortion of our images. 
+
 2. **Extract crucial visual information from the image**—in the image taken from the front camera of a self-driving car, most of the pixels are not really useful, i.e., the sky, the trees, the buildings. And if we only concern ourselves with the lanes, even other cars are completely irrelevant. So in this step we will
 	* Apply a couple of color and gradient transforms to see which methods work best at extracting the lane information.
 	* Convert the combined result of the previous step and create a binary image to make those feature pixels stand out even more.
+
 3. **Perspective transform**—just like human drivers pay attention to the curvature of the road to determine how much they should steer their wheels, so does a self-driving car. We need to calculate the curvature of the road so that later me may feed that information to the car. However, when the car is driving on the road facing forward, you have a picture of one-point perspective where the farther things are the smaller they look, and everything kind of converges and vanishes in the middle of the view. In this perspective, parallel lines don't appear parallel, and we have a problem. To solve this, we need to do a perspective transform that transforms the current one-point perspective to a birds-eye perspective which fixes the perspective distortion that we talked about just above. 
+
 4. **Detect lane pixels and find the lane boundary**—using the transformed image we parametrize the lane pixels using quardratic functions to get more solid boundaries.
+
 5. **Calculate the curvature of the lane at the vehicle's position**—when it's on the go, a self-driving car needs to know how much to turn left or right, based on the curvature of the road, we can use the parametriized lanes we just got to calculate the curvature of the lanes at the car's current position.
+
 6. **Warp the parametric boundaries back to the original image and mark the boundaries and the curvatures on the image**
 
 ## Camera Calibration
