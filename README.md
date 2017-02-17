@@ -24,18 +24,23 @@ The following steps will be taken in order to achieve the goal.
 
 ## Camera Calibration
 I use the following chessboard images which are taken using the same camera as the car to calibrate the camera.
+
 ![Alt text](./output_images/chessboard.png)
 
 As said in the outline, in order to distort any images taken by this camera, we will need the camera calibration matrix and the distortion coefficient. This can be done very easily using OpenCV's `cv2.calibrateCamera()` method. Essentially we feed `objpoints`, `imgpoints` and the image shape into the method and it outputs the matrix and the coefficient that we need, where `objpoints` stand for object points, and `imgpoints` stand for image points. As said earlier, when taking an image, we're essentially mapping 3D stuff to 2D so it's just a dimensionality reduction. If the lens is designed well, this mapping is sort of linearish. Given enough data, we can fit a linear function to them and recreate the distortion function. And this is exactly what we are doing here. The chessboard in reality is all the same, so our object points are all the same too, whereas the mapped image points are all different. So here we can first use the `cv2.findChessboardCorners()` method to locate the positions of the image points. Once we have the object points and image points we can then apply the `cv2.calibrateCamera()` method to get our matrix and the coefficient. We can then use them to undistort any images taken with this camera. The code snippet is in cell `[2]` of the iPython notebook `advanced_lane_detection.ipynb` (from this point on we will just call it the notebook).
 
 And here's a sanity check on the image `calibration2.jpg`:
+
 ![Alt text](./output_images/chessboard_calibrated.png)
 
 And a before/after comparison on the real stuff (`test1.jpg`):
+
 **Before**
+
 ![Alt text](./output_images/before.png)
 
 **After**
+
 ![Alt text](./output_images/after.png)
 
 ## Extract crucial visual information from the image
@@ -43,6 +48,7 @@ And a before/after comparison on the real stuff (`test1.jpg`):
 Here I decided to use the combined gradient of the original image in RGB color space and the saturation channel information in the HLS space to form a binary image that better represents the lane information in the image.
 
 First let's take a look again at the undistorted version of the image:
+
 ![Alt text](./output_images/after.png)
 
 ### Combined gradient binary
@@ -66,16 +72,19 @@ To get the saturation binary image, we first need to extract the saturation chan
 With simple numpy slicing we can get the saturation channel information, and we can apply a bunch of thresholds to the image and make it binary. This is again done in the `pipeline()` function (line `38` to line `45`).
 
 Here's the saturation channel binary of `test1.jpg`:
+
 ![Alt text](./output_images/sat_binary.png)
 
 Ta-da! The reappearing of the mysterious left lane! 
 
 And here is a color binary of the two methods combined:
+
 ![Alt text](./output_images/color_binary.png)
 
 We can clearly see these two methods are good at picking up different stuff, which is why they make a good couple!
 
 And finally, the black and white version of the color binary.
+
 ![Alt text](./output_images/ca_color.png)
 
 We shall now proceed using this binary for perspective transformation. Next stop, perspective transform!
@@ -101,6 +110,7 @@ The idea behind finding lane boundaries is simple. However, describing it can be
 5. In the process we record the locations of the pixels within the boxes, and then fit a quadratic function. And we're done!
 
 Again let's borrow the `test1.jpg`  to demonstrate the result:
+
 ![Alt text](./output_images/lane_detection.png)
 
 Looks good!
@@ -119,6 +129,7 @@ f(y) = A y^2 + B y + C
 $$ 
 
 Using Google Maps we know that the image is taken somewhere near the Udacity HQ where the curvature of the big left turn is about 1km. 
+
 ![Alt text](./output_images/udacity_hq.png)
 
 So we can do a sanity check using the image of that location (`test2.jpg`):
